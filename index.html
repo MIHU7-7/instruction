@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备监控面板</title>
+    <title>PCT-100 化工控制实训装置</title>
     <style>
         :root {
-            --bg-primary: #0f0f1e;
-            --bg-secondary: #1a1a2e;
-            --bg-card: rgba(26, 26, 46, 0.8);
-            --accent-primary: #00d4ff;
-            --accent-secondary: #4facfe;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --success: #00ff88;
-            --danger: #ff4757;
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #21262d;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         * {
@@ -23,534 +26,570 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(79, 172, 254, 0.1) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 0 24px;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, -20px) rotate(5deg); }
-        }
-
-        .container {
+        .nav-container {
             max-width: 1200px;
-            width: 100%;
-            position: relative;
-            z-index: 1;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease-out;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.8s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-
-        .card-header {
+        .nav-logo {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            gap: 12px;
         }
 
-        .card-icon {
-            font-size: 2.5rem;
-            margin-right: 15px;
-            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        .nav-logo-icon {
+            font-size: 24px;
         }
 
-        .card-title {
-            font-size: 1.1rem;
+        .nav-logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
             color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--accent-secondary);
             font-weight: 500;
         }
 
-        .card-value {
-            display: flex;
-            align-items: baseline;
-            margin-bottom: 15px;
-        }
-
-        .value {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-
-        .unit {
-            font-size: 1.5rem;
-            color: var(--accent-primary);
-            margin-left: 10px;
-            font-weight: 600;
-        }
-
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            margin-right: 8px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-        }
-
-        .trend {
-            font-size: 0.85rem;
-            padding: 4px 12px;
-            border-radius: 12px;
-            background: rgba(0, 255, 136, 0.1);
-            color: var(--success);
-        }
-
-        .trend.down {
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--danger);
-        }
-
-        .controls-section {
-            animation: fadeInUp 0.8s ease-out 0.3s both;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-        }
-
-        .control-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-        }
-
-        .control-card:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-        }
-
-        .control-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .control-icon {
-            font-size: 1.8rem;
-            margin-right: 15px;
-        }
-
-        .control-name {
-            font-size: 1rem;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .control-status {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 60px;
-            height: 32px;
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
             cursor: pointer;
+            padding: 8px;
         }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.4s ease;
-            border-radius: 32px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .slider::before {
-            position: absolute;
-            content: "";
-            height: 24px;
+        .hamburger-line {
             width: 24px;
-            left: 2px;
-            bottom: 2px;
-            background: var(--text-primary);
-            transition: all 0.4s ease;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            height: 2px;
+            background-color: var(--text-primary);
         }
 
-        input:checked + .slider {
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        .hero {
+            padding: 120px 24px 80px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(13, 17, 23, 0.5) 100%);
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
             border-color: var(--accent-primary);
         }
 
-        input:checked + .slider::before {
-            transform: translateX(28px);
+        .features {
+            padding: 60px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .slider:hover {
-            border-color: rgba(0, 212, 255, 0.5);
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .stats {
+            padding: 60px 24px;
+            background-color: var(--bg-secondary);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .quick-start {
+            padding: 60px 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quick-start-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .quick-start-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .quick-start-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quick-start-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .quick-start-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .footer {
+            padding: 40px 24px;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+
+        .footer-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-link {
+            display: block;
+            padding: 6px 0;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .footer-copyright {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 24px;
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
+            .nav-links {
+                display: none;
             }
 
-            .value {
-                font-size: 2.8rem;
+            .hamburger-menu {
+                display: flex;
             }
 
-            .card {
-                padding: 20px;
+            .hero-title {
+                font-size: 2rem;
             }
 
-            .control-card {
-                padding: 15px;
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 2rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px;
+        }
 
-            .controls-grid {
-                grid-template-columns: 1fr;
-            }
+        .mobile-menu.active {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mobile-menu .nav-link {
+            padding: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>设备监控面板</h1>
-            <p>实时监控环境数据与设备状态</p>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="nav-logo-icon">🔧</span>
+                <span class="nav-logo-text">PCT-100</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">首页</a>
+                <a href="manual.html" class="nav-link">产品说明书</a>
+                <a href="experiments.html" class="nav-link">实验教程</a>
+                <a href="api.html" class="nav-link">API文档</a>
+            </div>
+            <div class="hamburger-menu" id="hamburger">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
         </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="nav-link active">首页</a>
+            <a href="manual.html" class="nav-link">产品说明书</a>
+            <a href="experiments.html" class="nav-link">实验教程</a>
+            <a href="api.html" class="nav-link">API文档</a>
+        </div>
+    </nav>
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">🌡️</div>
-                    <div class="card-title">温度监控</div>
-                </div>
-                <div class="card-value">
-                    <span class="value" id="temperature">25.5</span>
-                    <span class="unit">°C</span>
-                </div>
-                <div class="card-footer">
-                    <div class="status">
-                        <div class="status-dot"></div>
-                        <span>实时监测中</span>
+    <section class="hero">
+        <h1 class="hero-title">PCT-100 化工控制实训装置</h1>
+        <p class="hero-subtitle">基于 ESP32-C3 的物联网化工控制实训平台，集成温度采集、光照检测、继电器控制、MQTT通信等核心功能</p>
+        <div class="hero-buttons">
+            <a href="manual.html" class="btn btn-primary">📖 查看说明书</a>
+            <a href="experiments.html" class="btn btn-secondary">🧪 开始实验</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title">核心功能</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌡️</div>
+                <div class="feature-title">温度采集</div>
+                <div class="feature-description">集成 DS18B20 单总线温度传感器，精确测量环境温度，支持 -55°C ~ 125°C 范围</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <div class="feature-title">光照检测</div>
+                <div class="feature-description">采用光敏电阻配合 12 位 ADC，实时检测环境光照强度，输出 0 ~ 1000 lux</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-title">继电器控制</div>
+                <div class="feature-description">2 路继电器输出，支持灯泡和风扇控制，支持自动/手动两种模式</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-title">MQTT通信</div>
+                <div class="feature-description">支持 MQTT 3.1.1 协议，实现远程监控和控制，便于云端集成</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">WiFi连接</div>
+                <div class="feature-description">支持 802.11b/g/n WiFi，轻松接入局域网，支持串口配置</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <div class="feature-title">状态指示</div>
+                <div class="feature-description">WS2812 RGB LED 指示系统状态，包括 WiFi 连接、MQTT 状态等</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value">+500</div>
+                <div class="stat-label">应用院校</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">10K+</div>
+                <div class="stat-label">实训人次</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">99%</div>
+                <div class="stat-label">稳定性</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">持续运行</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-start">
+        <div class="quick-start-card">
+            <h3 class="quick-start-title">快速开始</h3>
+            <ol class="quick-start-steps">
+                <li class="quick-start-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">硬件连接</div>
+                        <div class="step-description">连接电源、灯泡和风扇模块，确保接线正确</div>
                     </div>
-                    <div class="trend" id="temp-trend">↑ 2.3%</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">💡</div>
-                    <div class="card-title">光照强度</div>
-                </div>
-                <div class="card-value">
-                    <span class="value" id="light">750</span>
-                    <span class="unit">lux</span>
-                </div>
-                <div class="card-footer">
-                    <div class="status">
-                        <div class="status-dot"></div>
-                        <span>实时监测中</span>
+                </li>
+                <li class="quick-start-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">配置 WiFi</div>
+                        <div class="step-description">通过串口配置 WiFi SSID 和密码，设备自动连接网络</div>
                     </div>
-                    <div class="trend" id="light-trend">↓ 1.5%</div>
-                </div>
-            </div>
+                </li>
+                <li class="quick-start-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">远程监控</div>
+                        <div class="step-description">通过 MQTT 协议实现远程监控和控制设备状态</div>
+                    </div>
+                </li>
+            </ol>
         </div>
+    </section>
 
-        <div class="controls-section">
-            <h2 class="section-title">设备控制</h2>
-            <div class="controls-grid" id="controls">
-                <!-- 设备控制卡片将由 JavaScript 动态生成 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-section-title">产品</div>
+                <ul class="footer-links">
+                    <li><a href="manual.html" class="footer-link">产品说明书</a></li>
+                    <li><a href="experiments.html" class="footer-link">实验教程</a></li>
+                    <li><a href="api.html" class="footer-link">API文档</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-section-title">资源</div>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">开发指南</a></li>
+                    <li><a href="#" class="footer-link">技术支持</a></li>
+                    <li><a href="#" class="footer-link">常见问题</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-section-title">关于</div>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">关于我们</a></li>
+                    <li><a href="#" class="footer-link">联系我们</a></li>
+                    <li><a href="#" class="footer-link">合作伙伴</a></li>
+                </ul>
             </div>
         </div>
-    </div>
+        <div class="footer-copyright">
+            © 2024 PCT-100 化工控制实训装置. All rights reserved.
+        </div>
+    </footer>
 
     <script>
-        // 设备数据模型
-        const deviceData = {
-            temperature: {
-                value: 25.5,
-                unit: '°C',
-                trend: 2.3,
-                trendUp: true
-            },
-            light: {
-                value: 750,
-                unit: 'lux',
-                trend: 1.5,
-                trendUp: false
-            },
-            devices: [
-                { id: 1, name: '主灯', icon: '💡', status: true },
-                { id: 2, name: '空调', icon: '❄️', status: false },
-                { id: 3, name: '风扇', icon: '🌀', status: true },
-                { id: 4, name: '加湿器', icon: '💧', status: false }
-            ]
-        };
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-        // 更新温度显示
-        function updateTemperature() {
-            const tempElement = document.getElementById('temperature');
-            const trendElement = document.getElementById('temp-trend');
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
 
-            // 模拟温度变化
-            const change = (Math.random() - 0.5) * 2;
-            deviceData.temperature.value += change;
-            deviceData.temperature.value = Math.max(20, Math.min(30, deviceData.temperature.value));
-
-            // 平滑更新数值
-            animateValue(tempElement, parseFloat(tempElement.textContent), deviceData.temperature.value, 500);
-
-            // 更新趋势
-            deviceData.temperature.trend = Math.abs(change * 2).toFixed(1);
-            deviceData.temperature.trendUp = change > 0;
-
-            trendElement.textContent = `${deviceData.temperature.trendUp ? '↑' : '↓'} ${deviceData.temperature.trend}%`;
-            trendElement.className = `trend ${deviceData.temperature.trendUp ? '' : 'down'}`;
-        }
-
-        // 更新光照显示
-        function updateLight() {
-            const lightElement = document.getElementById('light');
-            const trendElement = document.getElementById('light-trend');
-
-            // 模拟光照变化
-            const change = Math.floor((Math.random() - 0.5) * 100);
-            deviceData.light.value += change;
-            deviceData.light.value = Math.max(500, Math.min(1000, deviceData.light.value));
-
-            // 平滑更新数值
-            animateValue(lightElement, parseInt(lightElement.textContent), deviceData.light.value, 500);
-
-            // 更新趋势
-            deviceData.light.trend = Math.abs(change / 10).toFixed(1);
-            deviceData.light.trendUp = change > 0;
-
-            trendElement.textContent = `${deviceData.light.trendUp ? '↑' : '↓'} ${deviceData.light.trend}%`;
-            trendElement.className = `trend ${deviceData.light.trendUp ? '' : 'down'}`;
-        }
-
-        // 数值动画
-        function animateValue(element, start, end, duration) {
-            const startTime = performance.now();
-            const isFloat = !Number.isInteger(end);
-
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-
-                // 使用 easeOutCubic 缓动函数
-                const easeProgress = 1 - Math.pow(1 - progress, 3);
-                const current = start + (end - start) * easeProgress;
-
-                element.textContent = isFloat ? current.toFixed(1) : Math.round(current);
-
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
             }
-
-            requestAnimationFrame(update);
-        }
-
-        // 渲染设备控制卡片
-        function renderControls() {
-            const controlsContainer = document.getElementById('controls');
-
-            controlsContainer.innerHTML = deviceData.devices.map(device => `
-                <div class="control-card">
-                    <div class="control-info">
-                        <div class="control-icon">${device.icon}</div>
-                        <div>
-                            <div class="control-name">${device.name}</div>
-                            <div class="control-status">${device.status ? '已开启' : '已关闭'}</div>
-                        </div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" ${device.status ? 'checked' : ''} onchange="toggleDevice(${device.id})">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            `).join('');
-        }
-
-        // 切换设备状态
-        function toggleDevice(deviceId) {
-            const device = deviceData.devices.find(d => d.id === deviceId);
-            if (device) {
-                device.status = !device.status;
-                renderControls();
-
-                // 添加切换动画反馈
-                const card = event.target.closest('.control-card');
-                card.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    card.style.transform = 'scale(1)';
-                }, 150);
-            }
-        }
-
-        // 初始化
-        function init() {
-            renderControls();
-
-            // 每3秒更新一次数据
-            setInterval(updateTemperature, 3000);
-            setInterval(updateLight, 3000);
-        }
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', init);
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCT-100 实验教程</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #21262d;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin: 0 8px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            gap: 10px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--accent-secondary);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .nav-link-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .content-page {
+            padding: 32px;
+            max-width: 900px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+        }
+
+        .content-page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .code-block {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background-color: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .step-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            font-size: 20px;
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: #fbbf24;
+        }
+
+        .tips-box {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .tips-icon {
+            font-size: 20px;
+        }
+
+        .tips-text {
+            font-size: 14px;
+            color: var(--accent-secondary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mobile-toggle-line {
+            width: 24px;
+            height: 2px;
+            background-color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .content-page {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-toggle" id="mobileToggle">
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">PCT-100</div>
+                <div class="sidebar-subtitle">实验教程</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">实验列表</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#exp1" class="nav-link active" data-page="exp1"><span class="nav-link-icon">1️⃣</span>按键外部中断与消抖</a></li>
+                        <li class="nav-item"><a href="#exp2" class="nav-link" data-page="exp2"><span class="nav-link-icon">2️⃣</span>传感器数据采集</a></li>
+                        <li class="nav-item"><a href="#exp3" class="nav-link" data-page="exp3"><span class="nav-link-icon">3️⃣</span>自动控制逻辑实现</a></li>
+                        <li class="nav-item"><a href="#exp4" class="nav-link" data-page="exp4"><span class="nav-link-icon">4️⃣</span>MQTT远程控制</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">其他资源</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="manual.html" class="nav-link"><span class="nav-link-icon">📖</span>产品说明书</a></li>
+                        <li class="nav-item"><a href="api.html" class="nav-link"><span class="nav-link-icon">📡</span>API文档</a></li>
+                        <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-link-icon">🏠</span>返回首页</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                © 2024 PCT-100. All rights reserved.
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="exp1" class="content-page active">
+                <div class="page-header">
+                    <h1 class="page-title">实验一：按键外部中断与非阻塞消抖</h1>
+                    <p class="page-subtitle">掌握 ESP32-C3 GPIO 输入配置、外部中断使用、非阻塞消抖实现</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">实验原理</h2>
+                    <div class="description">
+                        机械按键存在抖动问题，直接读取会产生多次触发。本实验使用 millis() 实现非阻塞消抖，
+                        中断服务函数只设置标志位，主循环处理业务逻辑。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">硬件连接</h2>
+                    <div class="description">
+                        KEY1 连接 GPIO20，KEY2 连接 GPIO21，使用下拉输入模式，按键按下时为高电平。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">代码实现</h2>
+                    <div class="code-block">
+                        <pre>// 按键中断配置
+void key_init() {
+    pinMode(KEY1_PIN, INPUT_PULLDOWN);
+    pinMode(KEY2_PIN, INPUT_PULLDOWN);
+    
+    attachInterrupt(digitalPinToInterrupt(KEY1_PIN), key1_isr, RISING);
+    attachInterrupt(digitalPinToInterrupt(KEY2_PIN), key2_isr, RISING);
+}
+
+// 中断服务函数
+void IRAM_ATTR key1_isr() {
+    key1_int_flag = true;
+}
+
+// 非阻塞消抖处理
+void key_task() {
+    if (key1_int_flag) {
+        if (millis() - key1_last_time > DEBOUNCE_TIME) {
+            if (digitalRead(KEY1_PIN) == HIGH) {
+                key1_state = !key1_state;
+            }
+            key1_int_flag = false;
+            key1_last_time = millis();
+        }
+    }
+}</pre>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">实验步骤</h2>
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">配置按键引脚</div>
+                                <div class="step-description">将 KEY1 连接到 GPIO20，KEY2 连接到 GPIO21</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">编写中断服务函数</div>
+                                <div class="step-description">在中断服务函数中设置标志位，避免在ISR中处理复杂逻辑</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">实现非阻塞消抖</div>
+                                <div class="step-description">使用 millis() 函数实现非阻塞延时消抖</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">测试验证</div>
+                                <div class="step-description">编译下载程序，打开串口监视器验证按键功能</div>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+
+                <div class="tips-box">
+                    <span class="tips-icon">💡</span>
+                    <span class="tips-text">中断服务函数应尽量简短，避免使用 delay() 等阻塞函数，推荐使用 volatile 变量传递状态。</span>
+                </div>
+            </div>
+
+            <div id="exp2" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">实验二：传感器数据采集</h1>
+                    <p class="page-subtitle">掌握 DS18B20 温度传感器、ADC 光照传感器的数据采集方法</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">实验原理</h2>
+                    <div class="description">
+                        DS18B20 使用单总线协议通信，通过 1-Wire 接口读取温度数据。光照传感器通过 ADC 采集模拟电压值，
+                        转换为光照强度（lux）。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">硬件连接</h2>
+                    <div class="description">
+                        DS18B20 连接 GPIO10，光敏电阻连接 GPIO1（ADC 输入）。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">代码实现</h2>
+                    <div class="code-block">
+                        <pre>// DS18B20 温度读取
+float read_temperature() {
+    sensors.requestTemperatures();
+    return sensors.getTempCByIndex(0);
+}
+
+// ADC 光照读取
+int read_light() {
+    int raw = analogRead(LIGHT_PIN);
+    float voltage = raw * (3.3 / 4095.0);
+    int lux = map(raw, 0, 4095, 1000, 0);
+    return lux;
+}
+
+// 传感器任务
+void sensor_task() {
+    if (millis() - sensor_last_time > SENSOR_INTERVAL) {
+        temperature = read_temperature();
+        light = read_light();
+        sensor_last_time = millis();
+    }
+}</pre>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">实验步骤</h2>
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">连接传感器</div>
+                                <div class="step-description">将 DS18B20 连接到 GPIO10，光敏电阻连接到 GPIO1</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">安装库文件</div>
+                                <div class="step-description">安装 OneWire 和 DallasTemperature 库用于 DS18B20</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">编写采集函数</div>
+                                <div class="step-description">实现温度和光照的读取函数</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">测试验证</div>
+                                <div class="step-description">观察串口输出的传感器数据，验证采集功能</div>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+            </div>
+
+            <div id="exp3" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">实验三：自动控制逻辑实现</h1>
+                    <p class="page-subtitle">实现基于传感器数据的自动控制逻辑</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">控制逻辑</h2>
+                    <div class="description">
+                        温度高于阈值时开启风扇，低于阈值-2°C时关闭；光照低于阈值时开启灯泡，高于阈值+10lux时关闭。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">代码实现</h2>
+                    <div class="code-block">
+                        <pre>// 自动控制任务
+void auto_control_task() {
+    // 温度控制（风扇）
+    if (temperature >= temp_threshold) {
+        relay_on(FAN_RELAY);
+    } else if (temperature <= temp_threshold - 2) {
+        relay_off(FAN_RELAY);
+    }
+
+    // 光照控制（灯泡）
+    if (light <= light_threshold) {
+        relay_on(LAMP_RELAY);
+    } else if (light >= light_threshold + 10) {
+        relay_off(LAMP_RELAY);
+    }
+}
+
+// 继电器控制
+void relay_on(int relay) {
+    digitalWrite(relay, HIGH);
+}
+
+void relay_off(int relay) {
+    digitalWrite(relay, LOW);
+}</pre>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">实验步骤</h2>
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">设置阈值</div>
+                                <div class="step-description">设置温度阈值和光照阈值</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">实现控制逻辑</div>
+                                <div class="step-description">编写基于传感器数据的自动控制代码</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">测试验证</div>
+                                <div class="step-description">调节温度和光照，验证继电器自动开关功能</div>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+
+                <div class="warning-box">
+                    <span class="warning-icon">⚠️</span>
+                    <span class="warning-text">设置适当的回差值可以防止继电器频繁切换，延长使用寿命。</span>
+                </div>
+            </div>
+
+            <div id="exp4" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">实验四：MQTT 远程控制</h1>
+                    <p class="page-subtitle">实现 MQTT 协议通信，实现远程监控和控制</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">实验原理</h2>
+                    <div class="description">
+                        MQTT 是一种轻量级的发布/订阅消息协议，适合物联网设备通信。设备通过 MQTT Broker 实现状态上报和远程控制。
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">代码实现</h2>
+                    <div class="code-block">
+                        <pre>// MQTT 连接配置
+void mqtt_init() {
+    client.setServer(mqtt_broker, mqtt_port);
+    client.setCallback(mqtt_callback);
+}
+
+// MQTT 回调函数
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+    String msg = String((char*)payload, length);
+    
+    if (String(topic) == "chemctrl/" + device_id + "/command") {
+        if (msg == "lamp_on") relay_on(LAMP_RELAY);
+        if (msg == "lamp_off") relay_off(LAMP_RELAY);
+        if (msg == "fan_on") relay_on(FAN_RELAY);
+        if (msg == "fan_off") relay_off(FAN_RELAY);
+    }
+}
+
+// 状态上报
+void mqtt_report() {
+    String json = "{\"temp\":" + String(temperature) + 
+                  ",\"light\":" + String(light) + 
+                  ",\"lamp\":" + String(lamp_state) + 
+                  ",\"fan\":" + String(fan_state) + "}";
+    client.publish("chemctrl/" + device_id + "/status", json.c_str());
+}</pre>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">实验步骤</h2>
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">配置 MQTT Broker</div>
+                                <div class="step-description">设置 MQTT Broker 地址、端口和认证信息</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">实现回调函数</div>
+                                <div class="step-description">编写 MQTT 消息回调函数处理远程命令</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">实现状态上报</div>
+                                <div class="step-description">定时向云端发送设备状态</div>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">测试验证</div>
+                                <div class="step-description">使用 MQTT.fx 或类似工具测试远程控制功能</div>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link[data-page]');
+        const contentPages = document.querySelectorAll('.content-page');
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const targetPage = link.getAttribute('data-page');
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                contentPages.forEach(page => {
+                    page.style.opacity = '0';
+                    setTimeout(() => {
+                        page.classList.remove('active');
+                    }, 150);
+                });
+                
+                setTimeout(() => {
+                    const activePage = document.getElementById(targetPage);
+                    if (activePage) {
+                        activePage.classList.add('active');
+                        setTimeout(() => {
+                            activePage.style.opacity = '1';
+                        }, 30);
+                    }
+                }, 150);
+
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

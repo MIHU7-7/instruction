@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCT-100 API文档</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #21262d;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin: 0 8px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            gap: 10px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--accent-secondary);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .nav-link-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .content-page {
+            padding: 32px;
+            max-width: 900px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+        }
+
+        .content-page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-primary);
+        }
+
+        .api-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .api-header {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .api-method {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .api-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .api-body {
+            padding: 16px;
+        }
+
+        .api-topic {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            color: var(--accent-secondary);
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background-color: var(--bg-secondary);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .api-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .api-params {
+            margin-bottom: 12px;
+        }
+
+        .api-param {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .api-param:last-child {
+            border-bottom: none;
+        }
+
+        .api-param-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-right: 8px;
+        }
+
+        .api-param-type {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        .api-example {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            overflow-x: auto;
+        }
+
+        .protocol-info {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .protocol-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .protocol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .protocol-item {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .protocol-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .protocol-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mobile-toggle-line {
+            width: 24px;
+            height: 2px;
+            background-color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .content-page {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-toggle" id="mobileToggle">
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">PCT-100</div>
+                <div class="sidebar-subtitle">API文档</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">API 文档</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#protocol" class="nav-link active" data-page="protocol"><span class="nav-link-icon">📋</span>协议概述</a></li>
+                        <li class="nav-item"><a href="#commands" class="nav-link" data-page="commands"><span class="nav-link-icon">📡</span>命令接口</a></li>
+                        <li class="nav-item"><a href="#status" class="nav-link" data-page="status"><span class="nav-link-icon">📊</span>状态上报</a></li>
+                        <li class="nav-item"><a href="#serial" class="nav-link" data-page="serial"><span class="nav-link-icon">🔌</span>串口命令</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">其他资源</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="manual.html" class="nav-link"><span class="nav-link-icon">📖</span>产品说明书</a></li>
+                        <li class="nav-item"><a href="experiments.html" class="nav-link"><span class="nav-link-icon">🧪</span>实验教程</a></li>
+                        <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-link-icon">🏠</span>返回首页</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                © 2024 PCT-100. All rights reserved.
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="protocol" class="content-page active">
+                <div class="page-header">
+                    <h1 class="page-title">协议概述</h1>
+                    <p class="page-subtitle">PCT-100 的 MQTT 协议规范</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">协议信息</h2>
+                    <div class="protocol-info">
+                        <div class="protocol-title">MQTT 协议参数</div>
+                        <div class="protocol-grid">
+                            <div class="protocol-item">
+                                <div class="protocol-label">协议版本</div>
+                                <div class="protocol-value">MQTT 3.1.1</div>
+                            </div>
+                            <div class="protocol-item">
+                                <div class="protocol-label">默认端口</div>
+                                <div class="protocol-value">1883 (TCP)</div>
+                            </div>
+                            <div class="protocol-item">
+                                <div class="protocol-label">Keep Alive</div>
+                                <div class="protocol-value">30 秒</div>
+                            </div>
+                            <div class="protocol-item">
+                                <div class="protocol-label">QoS 级别</div>
+                                <div class="protocol-value">QoS 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">主题结构</h2>
+                    <div class="protocol-info">
+                        <div class="api-topic">chemctrl/{device_id}/{topic}</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 16px;">
+                            <div style="background-color: var(--bg-secondary); border-radius: 8px; padding: 12px;">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">chemctrl/{device_id}/status</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">设备状态上报（发布）</div>
+                            </div>
+                            <div style="background-color: var(--bg-secondary); border-radius: 8px; padding: 12px;">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">chemctrl/{device_id}/command</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">远程命令接收（订阅）</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="commands" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">命令接口</h1>
+                    <p class="page-subtitle">MQTT 命令接口列表</p>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method">POST</span>
+                            <span class="api-title">set_relay</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/command</div>
+                        <div class="api-desc">设置继电器状态</div>
+                        <div class="api-params">
+                            <div class="api-param">
+                                <span class="api-param-name">relay_num</span>
+                                <span class="api-param-type">number</span>
+                                - 继电器编号（3=灯泡，4=风扇）
+                            </div>
+                            <div class="api-param">
+                                <span class="api-param-name">value</span>
+                                <span class="api-param-type">boolean</span>
+                                - 状态（true=开启，false=关闭）
+                            </div>
+                        </div>
+                        <div class="api-example">
+{
+  "cmd": "set_relay",
+  "params": {
+    "relay_num": 3,
+    "value": true
+  }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method">POST</span>
+                            <span class="api-title">set_mode</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/command</div>
+                        <div class="api-desc">设置工作模式</div>
+                        <div class="api-params">
+                            <div class="api-param">
+                                <span class="api-param-name">mode</span>
+                                <span class="api-param-type">string</span>
+                                - 模式（auto=自动，manual=手动）
+                            </div>
+                        </div>
+                        <div class="api-example">
+{
+  "cmd": "set_mode",
+  "params": {
+    "mode": "auto"
+  }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method">POST</span>
+                            <span class="api-title">get_status</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/command</div>
+                        <div class="api-desc">主动获取设备状态</div>
+                        <div class="api-example">
+{
+  "cmd": "get_status",
+  "params": {}
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method">POST</span>
+                            <span class="api-title">set_threshold</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/command</div>
+                        <div class="api-desc">设置控制阈值</div>
+                        <div class="api-params">
+                            <div class="api-param">
+                                <span class="api-param-name">temp</span>
+                                <span class="api-param-type">number</span>
+                                - 温度阈值（°C）
+                            </div>
+                            <div class="api-param">
+                                <span class="api-param-name">light</span>
+                                <span class="api-param-type">number</span>
+                                - 光照阈值（lux）
+                            </div>
+                        </div>
+                        <div class="api-example">
+{
+  "cmd": "set_threshold",
+  "params": {
+    "temp": 30.0,
+    "light": 114.0
+  }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method">POST</span>
+                            <span class="api-title">reboot</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/command</div>
+                        <div class="api-desc">重启设备</div>
+                        <div class="api-example">
+{
+  "cmd": "reboot",
+  "params": {}
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="status" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">状态上报</h1>
+                    <p class="page-subtitle">设备状态上报格式</p>
+                </div>
+
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <span class="api-method" style="background-color: rgba(34, 197, 94, 0.2);">PUBLISH</span>
+                            <span class="api-title">Status Report</span>
+                        </div>
+                    </div>
+                    <div class="api-body">
+                        <div class="api-topic">chemctrl/{device_id}/status</div>
+                        <div class="api-desc">设备周期性上报状态信息（默认每5秒）</div>
+                        <div class="api-example">
+{
+  "device_id": "PCT_100_520",
+  "temperature": 25.5,
+  "light": 750,
+  "mode": "auto",
+  "key1": true,
+  "lamp": false,
+  "fan": true,
+  "temp_threshold": 30.0,
+  "light_threshold": 114.0,
+  "timestamp": 1699999999
+}
+                        </div>
+                        <div style="margin-top: 16px;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px;">字段说明</div>
+                            <div class="api-params">
+                                <div class="api-param"><span class="api-param-name">device_id</span> <span class="api-param-type">string</span> - 设备唯一标识</div>
+                                <div class="api-param"><span class="api-param-name">temperature</span> <span class="api-param-type">number</span> - 当前温度（°C）</div>
+                                <div class="api-param"><span class="api-param-name">light</span> <span class="api-param-type">number</span> - 当前光照强度（lux）</div>
+                                <div class="api-param"><span class="api-param-name">mode</span> <span class="api-param-type">string</span> - 当前工作模式</div>
+                                <div class="api-param"><span class="api-param-name">key1</span> <span class="api-param-type">boolean</span> - KEY1 状态</div>
+                                <div class="api-param"><span class="api-param-name">lamp</span> <span class="api-param-type">boolean</span> - 灯泡继电器状态</div>
+                                <div class="api-param"><span class="api-param-name">fan</span> <span class="api-param-type">boolean</span> - 风扇继电器状态</div>
+                                <div class="api-param"><span class="api-param-name">temp_threshold</span> <span class="api-param-type">number</span> - 温度控制阈值</div>
+                                <div class="api-param"><span class="api-param-name">light_threshold</span> <span class="api-param-type">number</span> - 光照控制阈值</div>
+                                <div class="api-param"><span class="api-param-name">timestamp</span> <span class="api-param-type">number</span> - 时间戳</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="serial" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">串口命令</h1>
+                    <p class="page-subtitle">通过串口配置和控制设备</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">WiFi 命令</h2>
+                    <div class="protocol-info">
+                        <div class="api-example">
+wifi_set ssid YOUR_WIFI_SSID    # 设置 WiFi SSID
+wifi_set pass YOUR_WIFI_PASSWORD # 设置 WiFi 密码
+wifi_save                        # 保存 WiFi 配置
+wifi_connect                     # 连接 WiFi
+wifi_scan                        # 扫描周边 WiFi
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">MQTT 命令</h2>
+                    <div class="protocol-info">
+                        <div class="api-example">
+mqtt_set broker mqtt.example.com  # 设置 MQTT Broker 地址
+mqtt_set port 1883                # 设置 MQTT 端口
+mqtt_set user username            # 设置 MQTT 用户名
+mqtt_set pass password            # 设置 MQTT 密码
+mqtt_set devid PCT_100_001        # 设置设备 ID
+mqtt_save                         # 保存 MQTT 配置
+mqtt_connect                      # 连接 MQTT Broker
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">错误码</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: #f87171;">ERR_INVALID_CMD</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">命令格式错误</div>
+                        </div>
+                        <div style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: #f87171;">ERR_INVALID_PARAM</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">参数无效</div>
+                        </div>
+                        <div style="background-color: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: #fbbf24;">WARN_NOT_ALLOWED</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">当前模式不允许此操作</div>
+                        </div>
+                        <div style="background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--success);">OK</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">操作成功</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link[data-page]');
+        const contentPages = document.querySelectorAll('.content-page');
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const targetPage = link.getAttribute('data-page');
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                contentPages.forEach(page => {
+                    page.style.opacity = '0';
+                    setTimeout(() => {
+                        page.classList.remove('active');
+                    }, 150);
+                });
+                
+                setTimeout(() => {
+                    const activePage = document.getElementById(targetPage);
+                    if (activePage) {
+                        activePage.classList.add('active');
+                        setTimeout(() => {
+                            activePage.style.opacity = '1';
+                        }, 30);
+                    }
+                }, 150);
+
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

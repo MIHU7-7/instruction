@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCT-100 产品说明书</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #21262d;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin: 0 8px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            gap: 10px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--accent-secondary);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .nav-link-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .content-page {
+            padding: 32px;
+            max-width: 900px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+        }
+
+        .content-page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .tech-specs {
+            overflow-x: auto;
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .spec-table th,
+        .spec-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .spec-table th {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+        }
+
+        .spec-name {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .spec-value {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .code-block {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .warning-box {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            font-size: 20px;
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: #fbbf24;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .architecture-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .architecture-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .architecture-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .arch-node {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        .maintenance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .maintenance-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .maintenance-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .maintenance-list {
+            list-style: none;
+            padding: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .maintenance-item {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .maintenance-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mobile-toggle-line {
+            width: 24px;
+            height: 2px;
+            background-color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .content-page {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-toggle" id="mobileToggle">
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+        <div class="mobile-toggle-line"></div>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">PCT-100</div>
+                <div class="sidebar-subtitle">化工控制实训装置</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">产品说明书</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#overview" class="nav-link active" data-page="overview"><span class="nav-link-icon">📋</span>产品概述</a></li>
+                        <li class="nav-item"><a href="#specs" class="nav-link" data-page="specs"><span class="nav-link-icon">⚙️</span>技术规格</a></li>
+                        <li class="nav-item"><a href="#hardware" class="nav-link" data-page="hardware"><span class="nav-link-icon">🔧</span>硬件架构</a></li>
+                        <li class="nav-item"><a href="#software" class="nav-link" data-page="software"><span class="nav-link-icon">💻</span>软件架构</a></li>
+                        <li class="nav-item"><a href="#installation" class="nav-link" data-page="installation"><span class="nav-link-icon">🛠️</span>安装调试</a></li>
+                        <li class="nav-item"><a href="#operation" class="nav-link" data-page="operation"><span class="nav-link-icon">🎮</span>操作指南</a></li>
+                        <li class="nav-item"><a href="#maintenance" class="nav-link" data-page="maintenance"><span class="nav-link-icon">🔄</span>维护保养</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">其他资源</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="experiments.html" class="nav-link"><span class="nav-link-icon">🧪</span>实验教程</a></li>
+                        <li class="nav-item"><a href="api.html" class="nav-link"><span class="nav-link-icon">📡</span>API文档</a></li>
+                        <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-link-icon">🏠</span>返回首页</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                © 2024 PCT-100. All rights reserved.
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="overview" class="content-page active">
+                <div class="page-header">
+                    <h1 class="page-title">产品概述</h1>
+                    <p class="page-subtitle">PCT-100 化工控制实训装置简介</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">产品简介</h2>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                        PCT-100 是一款基于 ESP32-C3 的物联网化工控制实训平台，专为化工专业教学和技能培训设计。
+                        该装置集成了温度采集、光照检测、继电器控制、MQTT通信等核心功能，提供真实工业场景的实践教学环境。
+                    </p>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">核心亮点</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🔧</div>
+                            <div class="feature-title">模块化设计</div>
+                            <div class="feature-description">采用模块化架构，支持灵活组合配置，满足不同教学需求</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-title">实时监控</div>
+                            <div class="feature-description">集成多种传感器，实时采集温度、光照等工艺参数</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <div class="feature-title">ESP32主控</div>
+                            <div class="feature-description">采用 ESP32-C3 高性能微控制器，支持 WiFi 和蓝牙</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔗</div>
+                            <div class="feature-title">MQTT通信</div>
+                            <div class="feature-description">支持 MQTT 协议，便于云端集成和远程控制</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">系统架构</h2>
+                    <div class="architecture-box">
+                        <div class="architecture-title">四层系统架构</div>
+                        <div class="architecture-flow">
+                            <div class="arch-node">感知层</div>
+                            <span class="arch-arrow">→</span>
+                            <div class="arch-node">控制层</div>
+                            <span class="arch-arrow">→</span>
+                            <div class="arch-node">网络层</div>
+                            <span class="arch-arrow">→</span>
+                            <div class="arch-node">应用层</div>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-secondary); text-align: center; margin-top: 16px;">
+                            传感器采集 → ESP32控制 → WiFi/MQTT → 云端监控
+                        </p>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">应用场景</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--text-secondary); text-align: center;">📚 化工专业实验教学</div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--text-secondary); text-align: center;">🔬 过程控制研究</div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--text-secondary); text-align: center;">🎓 技能培训考核</div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--text-secondary); text-align: center;">🏭 工厂岗前培训</div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="specs" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">技术规格</h1>
+                    <p class="page-subtitle">详细的技术参数</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">主要参数</h2>
+                    <div class="tech-specs">
+                        <table class="spec-table">
+                            <thead>
+                                <tr>
+                                    <th>参数名称</th>
+                                    <th>规格</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="spec-name">主控芯片</td><td class="spec-value">ESP32-C3 (RISC-V 32位单核)</td></tr>
+                                <tr><td class="spec-name">工作电源</td><td class="spec-value">DC 5V / USB Type-C</td></tr>
+                                <tr><td class="spec-name">温度传感器</td><td class="spec-value">DS18B20 (-55°C ~ 125°C)</td></tr>
+                                <tr><td class="spec-name">温度精度</td><td class="spec-value">±0.5°C</td></tr>
+                                <tr><td class="spec-name">光照传感器</td><td class="spec-value">光敏电阻 + ADC</td></tr>
+                                <tr><td class="spec-name">光照测量范围</td><td class="spec-value">0 ~ 1000 lux</td></tr>
+                                <tr><td class="spec-name">继电器输出</td><td class="spec-value">2路 (灯泡、风扇控制)</td></tr>
+                                <tr><td class="spec-name">按键输入</td><td class="spec-value">2路 (KEY1、KEY2)</td></tr>
+                                <tr><td class="spec-name">LED指示灯</td><td class="spec-value">WS2812 RGB LED</td></tr>
+                                <tr><td class="spec-name">通信接口</td><td class="spec-value">WiFi 802.11b/g/n、USB CDC</td></tr>
+                                <tr><td class="spec-name">通信协议</td><td class="spec-value">MQTT 3.1.1</td></tr>
+                                <tr><td class="spec-name">存储容量</td><td class="spec-value">Flash 4MB</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">引脚分配</h2>
+                    <div class="tech-specs">
+                        <table class="spec-table">
+                            <thead>
+                                <tr>
+                                    <th>引脚</th>
+                                    <th>功能</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="spec-value">GPIO1</td><td class="spec-name">光照ADC</td><td class="spec-name">光敏传感器输入</td></tr>
+                                <tr><td class="spec-value">GPIO6</td><td class="spec-name">灯泡继电器</td><td class="spec-name">输出 HIGH 吸合</td></tr>
+                                <tr><td class="spec-value">GPIO7</td><td class="spec-name">风扇继电器</td><td class="spec-name">输出 HIGH 吸合</td></tr>
+                                <tr><td class="spec-value">GPIO10</td><td class="spec-name">DS18B20</td><td class="spec-name">单总线温度传感器</td></tr>
+                                <tr><td class="spec-value">GPIO20</td><td class="spec-name">KEY1</td><td class="spec-name">下拉输入，自锁总开关</td></tr>
+                                <tr><td class="spec-value">GPIO21</td><td class="spec-name">KEY2</td><td class="spec-name">下拉输入，模式切换</td></tr>
+                                <tr><td class="spec-value">GPIO8</td><td class="spec-name">WS2812</td><td class="spec-name">RGB LED 控制</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="hardware" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">硬件架构</h1>
+                    <p class="page-subtitle">模块化硬件设计</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">硬件组成</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <div class="feature-title">ESP32-C3 主控</div>
+                            <div class="feature-description">RISC-V 32位单核处理器，集成 WiFi 和蓝牙，4MB Flash</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🌡️</div>
+                            <div class="feature-title">DS18B20 温度传感器</div>
+                            <div class="feature-description">单总线数字温度传感器，测量范围-55°C~125°C</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💡</div>
+                            <div class="feature-title">光敏传感器</div>
+                            <div class="feature-description">光敏电阻配合12位ADC，测量环境光照强度</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚙️</div>
+                            <div class="feature-title">继电器模块</div>
+                            <div class="feature-description">2路继电器输出，控制灯泡和风扇电源</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎛️</div>
+                            <div class="feature-title">按键输入</div>
+                            <div class="feature-description">2路机械按键，KEY1自锁总开关，KEY2模式切换</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✨</div>
+                            <div class="feature-title">WS2812 LED</div>
+                            <div class="feature-description">RGB可寻址LED，指示系统状态</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">接口说明</h2>
+                    <div class="architecture-box">
+                        <div class="architecture-title">USB Type-C 接口</div>
+                        <ul style="list-style: none; padding: 0; font-size: 14px; color: var(--text-secondary);">
+                            <li style="padding: 8px 0; border-bottom: 1px solid var(--border-color);">• <strong style="color: var(--text-primary);">电源输入：</strong>DC 5V，为整个系统供电</li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid var(--border-color);">• <strong style="color: var(--text-primary);">串口通信：</strong>USB CDC，用于调试和配置</li>
+                            <li style="padding: 8px 0;">• <strong style="color: var(--text-primary);">程序下载：</strong>支持 Arduino 一键下载</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <div id="software" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">软件架构</h1>
+                    <p class="page-subtitle">模块化软件设计</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">模块划分</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px;">
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">PCT-100.ino</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">主程序入口</div>
+                        </div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">main_task.cpp</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">主任务调度</div>
+                        </div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">sensor.cpp</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">传感器采集</div>
+                        </div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">relay.cpp</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">继电器控制</div>
+                        </div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">mqtt_manager.cpp</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">MQTT通信</div>
+                        </div>
+                        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">wifi_manager.cpp</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">WiFi管理</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">主循环任务</h2>
+                    <div class="code-block">
+                        <pre>void main_task_loop(void)
+{
+    serial_read_task();      // 串口命令读取
+    key_task();              // 按键状态机
+    sensor_task();           // 传感器采集
+    led_task();              // LED控制
+    wifi_manager_task();     // WiFi管理
+    mqtt_manager_task();     // MQTT通信
+    mqtt_report_task();      // 状态上报
+}</pre>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">按键控制逻辑</h2>
+                    <div class="architecture-box">
+                        <div class="architecture-title">KEY1 - 自锁总开关</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                            • 打开：允许本地控制，系统进入自动模式<br>
+                            • 关闭：继电器立即断开，禁止所有控制
+                        </p>
+                        <div class="architecture-title">KEY2 - 模式切换</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            • 短按（< 1500ms）：手动模式下切换继电器状态（00→01→10→11→00）<br>
+                            • 长按（≥ 1500ms）：在自动模式和手动模式之间切换<br>
+                            • 自动模式下短按无效
+                        </p>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">自动控制逻辑</h2>
+                    <div class="architecture-box">
+                        <div class="architecture-title">温度控制（风扇）</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                            温度 ≥ 阈值 → 风扇开启<br>
+                            温度 ≤ 阈值 - 2°C → 风扇关闭（回差防止频繁切换）
+                        </p>
+                        <div class="architecture-title">光照控制（灯泡）</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            光照 ≤ 阈值 → 灯泡开启<br>
+                            光照 ≥ 阈值 + 10lux → 灯泡关闭（回差防止频繁切换）
+                        </p>
+                    </div>
+                </section>
+            </div>
+
+            <div id="installation" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">安装调试</h1>
+                    <p class="page-subtitle">详细的安装步骤</p>
+                </div>
+
+                <div class="warning-box">
+                    <span class="warning-icon">⚠️</span>
+                    <span class="warning-text">安装前请确保已阅读并理解安全操作规程，断电操作时务必确认电源已切断。</span>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">安装步骤</h2>
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-title">硬件准备</div>
+                            <div class="step-description">检查 PCT-100 实训板、USB Type-C 数据线、5V 电源适配器、灯泡和风扇模块是否齐全。</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-title">连接负载设备</div>
+                            <div class="step-description">将灯泡连接到继电器输出1，风扇连接到继电器输出2，确保接线正确无误。</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-title">电源连接</div>
+                            <div class="step-description">使用 USB Type-C 数据线连接实训板和电源适配器，确保电源输出为 5V/2A。</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-title">开发环境配置</div>
+                            <div class="step-description">安装 Arduino IDE 或 PlatformIO，添加 ESP32 开发板支持，选择 ESP32C3 Dev Module。</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-title">代码下载</div>
+                            <div class="step-description">打开 PCT-100.ino 工程，选择正确的端口和开发板，点击上传按钮下载程序。</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">6</div>
+                            <div class="step-title">串口调试</div>
+                            <div class="step-description">打开串口监视器，波特率设置为 115200，查看启动信息，确认系统正常运行。</div>
+                        </li>
+                    </ol>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">WiFi 配置</h2>
+                    <div class="code-block">
+                        <pre>// 连接 WiFi
+wifi_set ssid YOUR_WIFI_SSID
+wifi_set pass YOUR_WIFI_PASSWORD
+wifi_save
+wifi_connect
+
+// 配置 MQTT Broker
+mqtt_set broker mqtt.example.com
+mqtt_set port 1883
+mqtt_set user username
+mqtt_set pass password
+mqtt_set devid PCT_100_001
+mqtt_save</pre>
+                    </div>
+                </section>
+            </div>
+
+            <div id="operation" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">操作指南</h1>
+                    <p class="page-subtitle">设备操作流程和使用说明</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">开机操作流程</h2>
+                    <div class="architecture-box">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                                <div style="width: 24px; height: 24px; background-color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">1</div>
+                                <div style="font-size: 14px; color: var(--text-primary);">连接电源，设备自动启动</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                                <div style="width: 24px; height: 24px; background-color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">2</div>
+                                <div style="font-size: 14px; color: var(--text-primary);">系统初始化传感器和继电器</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                                <div style="width: 24px; height: 24px; background-color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">3</div>
+                                <div style="font-size: 14px; color: var(--text-primary);">自动连接 WiFi（已配置情况下）</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                                <div style="width: 24px; height: 24px; background-color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">4</div>
+                                <div style="font-size: 14px; color: var(--text-primary);">连接 MQTT Broker</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                                <div style="width: 24px; height: 24px; background-color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">5</div>
+                                <div style="font-size: 14px; color: var(--text-primary);">进入自动控制模式</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">LED状态指示</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; background-color: var(--bg-card); padding: 12px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: #22c55e; border-radius: 50%;"></div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">绿色</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">WiFi 已连接</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; background-color: var(--bg-card); padding: 12px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: #f59e0b; border-radius: 50%;"></div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">黄色</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">WiFi 连接中</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; background-color: var(--bg-card); padding: 12px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: #ef4444; border-radius: 50%;"></div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">红色</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">WiFi 断开</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; background-color: var(--bg-card); padding: 12px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: #8b5cf6; border-radius: 50%;"></div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">紫色</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">MQTT 已连接</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">串口命令</h2>
+                    <div class="architecture-box">
+                        <div class="architecture-title">WiFi 命令</div>
+                        <div class="code-block" style="margin-bottom: 12px;">
+                            <pre>wifi_set ssid &lt;名称&gt;    # 设置 WiFi SSID
+wifi_set pass &lt;密码&gt;    # 设置 WiFi 密码
+wifi_save               # 保存 WiFi 配置
+wifi_connect            # 连接 WiFi
+wifi_scan               # 扫描周边 WiFi</pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="maintenance" class="content-page">
+                <div class="page-header">
+                    <h1 class="page-title">维护保养</h1>
+                    <p class="page-subtitle">定期维护要点和故障处理</p>
+                </div>
+
+                <section class="section">
+                    <h2 class="section-title">定期维护</h2>
+                    <div class="maintenance-grid">
+                        <div class="maintenance-card">
+                            <div class="maintenance-title">
+                                <span>🔧</span> 每日检查
+                            </div>
+                            <ul class="maintenance-list">
+                                <li class="maintenance-item">检查电源指示灯是否正常</li>
+                                <li class="maintenance-item">检查传感器数值是否正常</li>
+                                <li class="maintenance-item">检查继电器工作状态</li>
+                                <li class="maintenance-item">清理设备表面灰尘</li>
+                            </ul>
+                        </div>
+                        <div class="maintenance-card">
+                            <div class="maintenance-title">
+                                <span>📅</span> 每周维护
+                            </div>
+                            <ul class="maintenance-list">
+                                <li class="maintenance-item">检查电气连接是否紧固</li>
+                                <li class="maintenance-item">校准温度传感器零点</li>
+                                <li class="maintenance-item">检查执行机构动作是否正常</li>
+                                <li class="maintenance-item">备份程序和配置</li>
+                            </ul>
+                        </div>
+                        <div class="maintenance-card">
+                            <div class="maintenance-title">
+                                <span>🔄</span> 每月保养
+                            </div>
+                            <ul class="maintenance-list">
+                                <li class="maintenance-item">检查所有传感器精度</li>
+                                <li class="maintenance-item">清洁光敏传感器表面</li>
+                                <li class="maintenance-item">检查继电器触点状态</li>
+                                <li class="maintenance-item">更新固件版本</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">常见故障处理</h2>
+                    <div class="tech-specs">
+                        <table class="spec-table">
+                            <thead>
+                                <tr>
+                                    <th>故障现象</th>
+                                    <th>可能原因</th>
+                                    <th>处理方法</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td style="color: #f87171;">温度显示异常</td><td class="spec-name">传感器接线松动或损坏</td><td class="spec-value">检查接线，更换传感器</td></tr>
+                                <tr><td style="color: #f87171;">光照无变化</td><td class="spec-name">光敏电阻遮挡或ADC故障</td><td class="spec-value">清理遮挡物，检查ADC通道</td></tr>
+                                <tr><td style="color: #f87171;">继电器不动作</td><td class="spec-name">继电器故障或线路断路</td><td class="spec-value">检查继电器，修复线路</td></tr>
+                                <tr><td style="color: #f87171;">WiFi 无法连接</td><td class="spec-name">SSID/密码错误或信号弱</td><td class="spec-value">重新配置WiFi，靠近路由器</td></tr>
+                                <tr><td style="color: #f87171;">MQTT 连接失败</td><td class="spec-name">Broker地址错误或网络不通</td><td class="spec-value">检查Broker配置，测试网络连通性</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link[data-page]');
+        const contentPages = document.querySelectorAll('.content-page');
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const targetPage = link.getAttribute('data-page');
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                contentPages.forEach(page => {
+                    page.style.opacity = '0';
+                    setTimeout(() => {
+                        page.classList.remove('active');
+                    }, 150);
+                });
+                
+                setTimeout(() => {
+                    const activePage = document.getElementById(targetPage);
+                    if (activePage) {
+                        activePage.classList.add('active');
+                        setTimeout(() => {
+                            activePage.style.opacity = '1';
+                        }, 30);
+                    }
+                }, 150);
+
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
