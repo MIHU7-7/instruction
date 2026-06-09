@@ -530,6 +530,8 @@
             </div>
         </aside>
 
+        <a href="#" class="back-to-top" id="backToTop">↑</a>
+
         <main class="main-content">
             <div id="overview" class="content-page active">
                 <div class="page-header">
@@ -754,6 +756,7 @@
                 <section class="section">
                     <h2 class="section-title">主循环任务</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="void main_task_loop(void)&#10;{&#10;    serial_read_task();      // 串口命令读取&#10;    key_task();              // 按键状态机&#10;    sensor_task();           // 传感器采集&#10;    led_task();              // LED控制&#10;    wifi_manager_task();     // WiFi管理&#10;    mqtt_manager_task();     // MQTT通信&#10;    mqtt_report_task();      // 状态上报&#10;}">📋 复制</button>
                         <pre>void main_task_loop(void)
 {
     serial_read_task();      // 串口命令读取
@@ -851,6 +854,7 @@
                 <section class="section">
                     <h2 class="section-title">WiFi 配置</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="// 连接 WiFi&#10;wifi_set ssid YOUR_WIFI_SSID&#10;wifi_set pass YOUR_WIFI_PASSWORD&#10;wifi_save&#10;wifi_connect&#10;&#10;// 配置 MQTT Broker&#10;mqtt_set broker mqtt.example.com&#10;mqtt_set port 1883&#10;mqtt_set user username&#10;mqtt_set pass password&#10;mqtt_set devid PCT_100_001&#10;mqtt_save">📋 复制</button>
                         <pre>// 连接 WiFi
 wifi_set ssid YOUR_WIFI_SSID
 wifi_set pass YOUR_WIFI_PASSWORD
@@ -941,6 +945,7 @@ mqtt_save</pre>
                     <div class="architecture-box">
                         <div class="architecture-title">WiFi 命令</div>
                         <div class="code-block" style="margin-bottom: 12px;">
+<button class="copy-btn" data-copy="wifi_set ssid &lt;名称&gt;    # 设置 WiFi SSID&#10;wifi_set pass &lt;密码&gt;    # 设置 WiFi 密码&#10;wifi_save               # 保存 WiFi 配置&#10;wifi_connect            # 连接 WiFi&#10;wifi_scan               # 扫描周边 WiFi">📋 复制</button>
                             <pre>wifi_set ssid &lt;名称&gt;    # 设置 WiFi SSID
 wifi_set pass &lt;密码&gt;    # 设置 WiFi 密码
 wifi_save               # 保存 WiFi 配置
@@ -1026,6 +1031,8 @@ wifi_scan               # 扫描周边 WiFi</pre>
         const contentPages = document.querySelectorAll('.content-page');
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
+        const backToTop = document.getElementById('backToTop');
+        const copyButtons = document.querySelectorAll('.copy-btn');
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -1073,6 +1080,36 @@ wifi_scan               # 扫描周边 WiFi</pre>
             if (window.innerWidth >= 768) {
                 sidebar.classList.remove('active');
             }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.getAttribute('data-copy');
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '✓ 已复制';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = '📋 复制';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
         });
     </script>
 </body>

@@ -214,6 +214,13 @@
             padding: 16px;
             overflow-x: auto;
             margin-bottom: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .code-block:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
         }
 
         .code-block pre {
@@ -222,6 +229,35 @@
             font-size: 13px;
             color: var(--text-primary);
             line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 6px 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .copy-btn.copied {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-color: var(--success);
+            color: var(--success);
         }
 
         .step-list {
@@ -426,6 +462,7 @@
                 <section class="section">
                     <h2 class="section-title">代码实现</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="// 按键中断配置&#10;void key_init() {&#10;    pinMode(KEY1_PIN, INPUT_PULLDOWN);&#10;    pinMode(KEY2_PIN, INPUT_PULLDOWN);&#10;    &#10;    attachInterrupt(digitalPinToInterrupt(KEY1_PIN), key1_isr, RISING);&#10;    attachInterrupt(digitalPinToInterrupt(KEY2_PIN), key2_isr, RISING);&#10;}&#10;&#10;// 中断服务函数&#10;void IRAM_ATTR key1_isr() {&#10;    key1_int_flag = true;&#10;}&#10;&#10;// 非阻塞消抖处理&#10;void key_task() {&#10;    if (key1_int_flag) {&#10;        if (millis() - key1_last_time > DEBOUNCE_TIME) {&#10;            if (digitalRead(KEY1_PIN) == HIGH) {&#10;                key1_state = !key1_state;&#10;            }&#10;            key1_int_flag = false;&#10;            key1_last_time = millis();&#10;        }&#10;    }&#10;}">📋 复制</button>
                         <pre>// 按键中断配置
 void key_init() {
     pinMode(KEY1_PIN, INPUT_PULLDOWN);
@@ -519,6 +556,7 @@ void key_task() {
                 <section class="section">
                     <h2 class="section-title">代码实现</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="// DS18B20 温度读取&#10;float read_temperature() {&#10;    sensors.requestTemperatures();&#10;    return sensors.getTempCByIndex(0);&#10;}&#10;&#10;// ADC 光照读取&#10;int read_light() {&#10;    int raw = analogRead(LIGHT_PIN);&#10;    float voltage = raw * (3.3 / 4095.0);&#10;    int lux = map(raw, 0, 4095, 1000, 0);&#10;    return lux;&#10;}&#10;&#10;// 传感器任务&#10;void sensor_task() {&#10;    if (millis() - sensor_last_time > SENSOR_INTERVAL) {&#10;        temperature = read_temperature();&#10;        light = read_light();&#10;        sensor_last_time = millis();&#10;    }&#10;}">📋 复制</button>
                         <pre>// DS18B20 温度读取
 float read_temperature() {
     sensors.requestTemperatures();
@@ -595,6 +633,7 @@ void sensor_task() {
                 <section class="section">
                     <h2 class="section-title">代码实现</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="// 自动控制任务&#10;void auto_control_task() {&#10;    // 温度控制（风扇）&#10;    if (temperature >= temp_threshold) {&#10;        relay_on(FAN_RELAY);&#10;    } else if (temperature <= temp_threshold - 2) {&#10;        relay_off(FAN_RELAY);&#10;    }&#10;&#10;    // 光照控制（灯泡）&#10;    if (light <= light_threshold) {&#10;        relay_on(LAMP_RELAY);&#10;    } else if (light >= light_threshold + 10) {&#10;        relay_off(LAMP_RELAY);&#10;    }&#10;}&#10;&#10;// 继电器控制&#10;void relay_on(int relay) {&#10;    digitalWrite(relay, HIGH);&#10;}&#10;&#10;void relay_off(int relay) {&#10;    digitalWrite(relay, LOW);&#10;}">📋 复制</button>
                         <pre>// 自动控制任务
 void auto_control_task() {
     // 温度控制（风扇）
@@ -672,6 +711,7 @@ void relay_off(int relay) {
                 <section class="section">
                     <h2 class="section-title">代码实现</h2>
                     <div class="code-block">
+<button class="copy-btn" data-copy="// MQTT 连接配置&#10;void mqtt_init() {&#10;    client.setServer(mqtt_broker, mqtt_port);&#10;    client.setCallback(mqtt_callback);&#10;}&#10;&#10;// MQTT 回调函数&#10;void mqtt_callback(char* topic, byte* payload, unsigned int length) {&#10;    String msg = String((char*)payload, length);&#10;    &#10;    if (String(topic) == \"chemctrl/\" + device_id + \"/command\") {&#10;        if (msg == \"lamp_on\") relay_on(LAMP_RELAY);&#10;        if (msg == \"lamp_off\") relay_off(LAMP_RELAY);&#10;        if (msg == \"fan_on\") relay_on(FAN_RELAY);&#10;        if (msg == \"fan_off\") relay_off(FAN_RELAY);&#10;    }&#10;}&#10;&#10;// 状态上报&#10;void mqtt_report() {&#10;    String json = \"{\\\"temp\\\":\" + String(temperature) + &#10;                  \",\\\"light\\\":\" + String(light) + &#10;                  \",\\\"lamp\\\":\" + String(lamp_state) + &#10;                  \",\\\"fan\\\":\" + String(fan_state) + \"}\";&#10;    client.publish(\"chemctrl/\" + device_id + \"/status\", json.c_str());&#10;}">📋 复制</button>
                         <pre>// MQTT 连接配置
 void mqtt_init() {
     client.setServer(mqtt_broker, mqtt_port);
@@ -743,6 +783,7 @@ void mqtt_report() {
         const contentPages = document.querySelectorAll('.content-page');
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
+        const copyButtons = document.querySelectorAll('.copy-btn');
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -790,6 +831,20 @@ void mqtt_report() {
             if (window.innerWidth >= 768) {
                 sidebar.classList.remove('active');
             }
+        });
+
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.getAttribute('data-copy');
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '✓ 已复制';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = '📋 复制';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
         });
     </script>
 </body>

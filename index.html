@@ -203,13 +203,35 @@
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 24px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
         }
 
         .feature-card:hover {
             border-color: var(--accent-primary);
             transform: translateY(-4px);
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
         }
 
         .feature-icon {
@@ -252,6 +274,40 @@
             font-weight: 700;
             color: var(--accent-primary);
             margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
         }
 
         .stat-label {
@@ -495,27 +551,6 @@
         </div>
     </section>
 
-    <section class="stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-value">+500</div>
-                <div class="stat-label">应用院校</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">10K+</div>
-                <div class="stat-label">实训人次</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">99%</div>
-                <div class="stat-label">稳定性</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">24/7</div>
-                <div class="stat-label">持续运行</div>
-            </div>
-        </div>
-    </section>
-
     <section class="quick-start">
         <div class="quick-start-card">
             <h3 class="quick-start-title">快速开始</h3>
@@ -544,6 +579,8 @@
             </ol>
         </div>
     </section>
+
+    <a href="#" class="back-to-top" id="backToTop">↑</a>
 
     <footer class="footer">
         <div class="footer-container">
@@ -580,6 +617,7 @@
     <script>
         const hamburger = document.getElementById('hamburger');
         const mobileMenu = document.getElementById('mobileMenu');
+        const backToTop = document.getElementById('backToTop');
 
         hamburger.addEventListener('click', () => {
             mobileMenu.classList.toggle('active');
@@ -590,6 +628,68 @@
                 mobileMenu.classList.remove('active');
             }
         });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        const animateNumbers = () => {
+            const statValues = document.querySelectorAll('.stat-value[data-target]');
+            
+            statValues.forEach((stat) => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const suffix = stat.textContent.replace(/[\d+]/g, '');
+                const duration = 2000;
+                const startTime = performance.now();
+                
+                const updateNumber = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const current = Math.floor(target * easeOutQuart);
+                    
+                    if (stat.getAttribute('data-target') === '500') {
+                        stat.textContent = '+' + current;
+                    } else if (stat.getAttribute('data-target') === '99') {
+                        stat.textContent = current + '%';
+                    } else {
+                        stat.textContent = current.toLocaleString();
+                    }
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateNumber);
+                    }
+                };
+                
+                requestAnimationFrame(updateNumber);
+            });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    animateNumbers();
+                    observer.disconnect();
+                }
+            });
+        }, { threshold: 0.3 });
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
     </script>
 </body>
 </html>

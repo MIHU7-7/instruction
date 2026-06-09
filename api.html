@@ -289,6 +289,45 @@
             font-size: 13px;
             color: var(--text-primary);
             overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 6px 12px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .copy-btn.copied {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .api-card {
+            transition: all 0.3s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
 
         .protocol-info {
@@ -502,6 +541,7 @@
                             </div>
                         </div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"cmd": "set_relay", "params": {"relay_num": 3, "value": true}}'>📋 复制</button>
 {
   "cmd": "set_relay",
   "params": {
@@ -531,6 +571,7 @@
                             </div>
                         </div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"cmd": "set_mode", "params": {"mode": "auto"}}'>📋 复制</button>
 {
   "cmd": "set_mode",
   "params": {
@@ -552,6 +593,7 @@
                         <div class="api-topic">chemctrl/{device_id}/command</div>
                         <div class="api-desc">主动获取设备状态</div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"cmd": "get_status", "params": {}}'>📋 复制</button>
 {
   "cmd": "get_status",
   "params": {}
@@ -583,6 +625,7 @@
                             </div>
                         </div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"cmd": "set_threshold", "params": {"temp": 30.0, "light": 114.0}}'>📋 复制</button>
 {
   "cmd": "set_threshold",
   "params": {
@@ -605,6 +648,7 @@
                         <div class="api-topic">chemctrl/{device_id}/command</div>
                         <div class="api-desc">重启设备</div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"cmd": "reboot", "params": {}}'>📋 复制</button>
 {
   "cmd": "reboot",
   "params": {}
@@ -631,6 +675,7 @@
                         <div class="api-topic">chemctrl/{device_id}/status</div>
                         <div class="api-desc">设备周期性上报状态信息（默认每5秒）</div>
                         <div class="api-example">
+<button class="copy-btn" data-copy='{"device_id": "PCT_100_520", "temperature": 25.5, "light": 750, "mode": "auto", "key1": true, "lamp": false, "fan": true, "temp_threshold": 30.0, "light_threshold": 114.0, "timestamp": 1699999999}'>📋 复制</button>
 {
   "device_id": "PCT_100_520",
   "temperature": 25.5,
@@ -673,6 +718,7 @@
                     <h2 class="section-title">WiFi 命令</h2>
                     <div class="protocol-info">
                         <div class="api-example">
+<button class="copy-btn" data-copy="wifi_set ssid YOUR_WIFI_SSID&#10;wifi_set pass YOUR_WIFI_PASSWORD&#10;wifi_save&#10;wifi_connect&#10;wifi_scan">📋 复制</button>
 wifi_set ssid YOUR_WIFI_SSID    # 设置 WiFi SSID
 wifi_set pass YOUR_WIFI_PASSWORD # 设置 WiFi 密码
 wifi_save                        # 保存 WiFi 配置
@@ -686,6 +732,7 @@ wifi_scan                        # 扫描周边 WiFi
                     <h2 class="section-title">MQTT 命令</h2>
                     <div class="protocol-info">
                         <div class="api-example">
+<button class="copy-btn" data-copy="mqtt_set broker mqtt.example.com&#10;mqtt_set port 1883&#10;mqtt_set user username&#10;mqtt_set pass password&#10;mqtt_set devid PCT_100_001&#10;mqtt_save&#10;mqtt_connect">📋 复制</button>
 mqtt_set broker mqtt.example.com  # 设置 MQTT Broker 地址
 mqtt_set port 1883                # 设置 MQTT 端口
 mqtt_set user username            # 设置 MQTT 用户名
@@ -727,6 +774,7 @@ mqtt_connect                      # 连接 MQTT Broker
         const contentPages = document.querySelectorAll('.content-page');
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobileToggle');
+        const copyButtons = document.querySelectorAll('.copy-btn');
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -774,6 +822,20 @@ mqtt_connect                      # 连接 MQTT Broker
             if (window.innerWidth >= 768) {
                 sidebar.classList.remove('active');
             }
+        });
+
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.getAttribute('data-copy');
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '✓ 已复制';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = '📋 复制';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
         });
     </script>
 </body>
